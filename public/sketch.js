@@ -8,7 +8,8 @@ var playerName;
 var gridSize = 50;
 
 function setup() {
-  createCanvas(700, 700);
+  var canvas = createCanvas(700, 700);
+  canvas.parent('canvas-container');
 
   playerName = prompt("Enter your name:", "Player");
   if (playerName == null || playerName.trim() === "") {
@@ -29,6 +30,7 @@ function setup() {
 
   socket.on('heartbeat', function(data) {
     blobs = data;
+    updatePlayerList();
   });
 
   socket.on('eaten', function() {
@@ -84,3 +86,19 @@ function draw() {
   };
   socket.emit('update', data);
 }
+
+function updatePlayerList() {
+    var playerList = document.getElementById('player-list');
+    playerList.innerHTML = '';
+    
+    blobs.sort((a, b) => b.r - a.r);
+    
+    blobs.forEach(function(blobData) {
+      var listItem = document.createElement('li');
+      listItem.textContent = `${blobData.name || 'Anonymous'} (${Math.round(blobData.r)})`;
+      if (blobData.id === socket.id) {
+        listItem.style.fontWeight = 'bold';
+      }
+      playerList.appendChild(listItem);
+    });
+  }
