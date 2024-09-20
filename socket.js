@@ -1,10 +1,11 @@
 var blobs = [];
 
-function Blob(id, x, y, r) {
+function Blob(id, x, y, r, name) {
   this.id = id;
   this.x = x;
   this.y = y;
   this.r = r;
+  this.name = name;
 }
 
 var express = require('express');
@@ -39,7 +40,8 @@ io.sockets.on(
 
     socket.on('start', function(data) {
     //   console.log(socket.id + ' ' + data.x + ' ' + data.y + ' ' + data.r);
-      var blob = new Blob(socket.id, data.x, data.y, data.r);
+      var blob = new Blob(socket.id, data.x, data.y, data.r, data.name);
+      console.log('-> Name: ', data.name)
       blobs.push(blob);
     });
 

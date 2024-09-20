@@ -3,15 +3,27 @@ var blob;
 var blobs = [];
 var zoom = 1;
 
+var playerName;
+
+var gridSize = 50;
+
 function setup() {
-  createCanvas(1000, 1000);
+  createCanvas(700, 700);
+
+  playerName = prompt("Enter your name:", "Player");
+  if (playerName == null || playerName.trim() === "") {
+    playerName = "Anonymous";
+  }
+
   socket = io.connect('http://localhost:3000');
+
 
   blob = new Blob(random(width), random(height), random(8, 24));
   var data = {
     x: blob.pos.x,
     y: blob.pos.y,
-    r: blob.r
+    r: blob.r,
+    name: playerName
   };
   socket.emit('start', data);
 
@@ -24,7 +36,8 @@ function setup() {
     var data = {
       x: blob.pos.x,
       y: blob.pos.y,
-      r: blob.r
+      r: blob.r,
+      name: playerName
     };
     socket.emit('start', data);
   });
@@ -38,6 +51,8 @@ function draw() {
   zoom = lerp(zoom, newzoom, 0.1);
   scale(zoom);
   translate(-blob.pos.x, -blob.pos.y);
+
+  drawGrid();
   
   for (var i = blobs.length - 1; i >= 0; i--) {
     var id = blobs[i].id;
@@ -48,7 +63,7 @@ function draw() {
       fill(255);
       textAlign(CENTER);
       textSize(4);
-      text(blobs[i].id, blobs[i].x, blobs[i].y + blobs[i].r);
+      text(blobs[i].name, blobs[i].x, blobs[i].y + blobs[i].r + 5);
 
       if (blob.eats(blobs[i])) {
         socket.emit('eat', blobs[i].id);
@@ -56,7 +71,7 @@ function draw() {
     }
   }
     
-  blob.show(socket.id);
+  blob.show(playerName);
   if (mouseIsPressed) {
     blob.update();
   }
