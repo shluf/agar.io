@@ -1,4 +1,5 @@
 var blobs = [];
+var blob;
 
 function Blob(id, x, y, r, name) {
   this.id = id;
@@ -40,7 +41,7 @@ io.sockets.on(
 
     socket.on('start', function(data) {
     //   console.log(socket.id + ' ' + data.x + ' ' + data.y + ' ' + data.r);
-      var blob = new Blob(socket.id, data.x, data.y, data.r, data.name);
+      blob = new Blob(socket.id, data.x, data.y, data.r, data.name);
       console.log('-> Name: ', data.name)
       blobs.push(blob);
     });
@@ -74,7 +75,7 @@ io.sockets.on(
       });
 
     socket.on('disconnect', function() {
-      console.log('Client has disconnected');
+      console.log(blob.name, ' has disconnected');
     });
   }
 );
